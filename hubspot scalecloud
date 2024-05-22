@@ -1,0 +1,98 @@
+import hubspot 
+import os
+import requests
+import json
+from hubspot import HubSpot
+
+def main(event):
+  #scale cloudのアクセストークン取得
+    # リクエストURL
+    url = "https://api-public.scalecloud.jp/basic/token"
+    # リクエストヘッダー
+    headers = {
+        "Content-Type": "application/json"
+    }
+    # リクエストボディ
+    payload = {
+        "email": "r-kawahara@handk-inc.co.jp",
+        "password": "v2RsjGdF"
+    }
+    # POSTリクエストを送信してトークンを取得
+    response = requests.post(url, json=payload, headers=headers)
+
+    #　2つのトークンを変数化
+    data = response.json()
+    access_token = data["accessToken"]
+    refresh_token = data["refreshToken"]
+    
+    #確認のため表示
+    print("アクセス:",access_token)
+    print("リフレッシュ:",refresh_token)
+    
+    # リフレッシュトークンを使ってトークンを更新
+	#def refresh_token(refresh_token):
+
+    # リクエストURL
+    #url2 = "https://api-public.scalecloud.jp/auth/token/refresh"
+    
+    # リクエストヘッダー
+    #headers = {
+        #"Content-Type": "application/json"
+    #}
+    
+    # リクエストボディ
+    #payload2 = {
+        #"refreshToken": refresh_token
+    #}
+
+    # POSTリクエストを送信してトークンを更新
+    #response2 = requests.post(url2, json=payload2, headers=headers)
+    
+    # レスポンスの内容を確認
+    #print(response2.text)
+
+    # レスポンスの内容を表示
+    #data2 = response2.json()
+    #print("アクセストークン:", data2["accessToken"])
+    #print("リフレッシュトークン:", data2["refreshToken"])
+    
+    #Hubspotのアクセストークン取得
+    hubspot = HubSpot(access_token=os.getenv('HUBSPOT_SECRET'))
+    
+    #プロパティを変数に格納
+    nodeld = event["inputFields"]["nodeld"]
+    #type =
+    period = event["inputFields"]["period"]
+    functionld = event["inputFields"]["functionld"]
+    scenariold = event["inputFields"]["nodeld"]
+    value = event["inputFields"]["nodeld"]
+    
+    #scale cloudにKPI値を送る関数
+    def send_scale_cloud(nodeld,period,functionld,scenariold,value):
+      API_BASE_URL = "https://api01.scalecloud.jp/v1/value"
+      API_ACSESS_TOKEN = access_token
+      
+      headers = {
+        'Authorization': f'Bearer {API_ACSESS_TOKEN}',
+        'Content-Type': 'application/json'
+      }
+    
+    #scale cloudに渡すデータ
+    KPI_date = {
+      "nodeld" = nodeld
+      "period" = period
+      "functionld" = functionld
+      "scenariod" = scenariod
+      "value" = value
+    }
+       
+    response = requests.post(API_BASE_URL, headers=headers, json=invoice_data)
+        print(response)
+        print(response.text)
+        print(response.status_code)
+    #scale cloudにKPI値を送る
+    send_scale_cloud = (nodeld,period,functionld,scenariold,value)
+    
+     return {
+        "outputFields": {}
+    }
